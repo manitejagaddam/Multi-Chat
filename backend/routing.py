@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 
 from models import Message, ChatRequest, MultiChatRequest
+from middleware.middleware import setup_cors
 
 
 from llm_connectors.deepseek import DeepSeekConnector
@@ -15,13 +16,14 @@ from utils import  auto_route_model
 from utils import generate_session_id, auto_route_model, get_session_messages, update_session_messages
 
 
-# Load environment variables
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
+
 app = FastAPI(title="Multi-LLM Chat API")
 
-# Initialize connectors
+setup_cors(app)
+
 connectors = {}
 for name, cls in [("deepseek", DeepSeekConnector), 
                   ("mistral", MistralConnector), 
