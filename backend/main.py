@@ -4,7 +4,7 @@ import logging
 import os
 from dotenv import load_dotenv
 
-from models.models import Message, ChatRequest, MultiChatRequest
+from models import Message, ChatRequest, MultiChatRequest
 from middleware.middleware import setup_cors
 
 

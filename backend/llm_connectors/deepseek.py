@@ -12,6 +12,7 @@ class DeepSeekConnector(BaseLLMConnector):
         
             # API endpoint
         url = os.getenv("OPENROUTER_URL")
+        # print(url)
         
         # Default model
         model = os.getenv("DEEPSEEK_MODEL", "deepseek/deepseek-r1:free")
