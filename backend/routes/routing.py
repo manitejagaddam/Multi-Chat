@@ -4,16 +4,15 @@ import logging
 import os
 from dotenv import load_dotenv
 
-from models import Message, ChatRequest, MultiChatRequest
-from middleware.middleware import setup_cors
+from backend.models.models import Message, ChatRequest, MultiChatRequest
+from backend.middleware.middleware import setup_cors
 
 
-from llm_connectors.deepseek import DeepSeekConnector
-from llm_connectors.mistral import MistralConnector
-from llm_connectors.qwen import QwenConnector
-from utils import auto_route_model
-from utils import  auto_route_model
-from utils import generate_session_id, auto_route_model, get_session_messages, update_session_messages
+from backend.llm_connectors.deepseek import DeepSeekConnector
+from backend.llm_connectors.mistral import MistralConnector
+from backend.llm_connectors.qwen import QwenConnector
+from backend.utils.utils import auto_route_model
+from backend.utils.utils import generate_session_id, auto_route_model, get_session_messages, update_session_messages
 
 
 load_dotenv()
