@@ -1,38 +1,38 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const modelsList = ["mistral", "deepseek", "gpt-4", "llama"];
-
-export default function App() {
-  const [selectedModels, setSelectedModels] = useState([]);
-  const [messages, setMessages] = useState([]);
+function App() {
   const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [selectedModels, setSelectedModels] = useState([]);
 
-  // Handle model selection with max 2
-  const toggleModel = (model) => {
+  const availableModels = ["mistral", "deepseek", "llama"];
+
+  // Toggle model selection (max 2)
+  const handleModelToggle = (model) => {
     if (selectedModels.includes(model)) {
       setSelectedModels(selectedModels.filter((m) => m !== model));
+    } else if (selectedModels.length < 2) {
+      setSelectedModels([...selectedModels, model]);
     } else {
-      if (selectedModels.length < 2) {
-        setSelectedModels([...selectedModels, model]);
-      } else {
-        alert("⚠️ You can select a maximum of 2 models.");
-      }
+      alert("⚠️ You can select at most 2 models");
     }
   };
 
-  // Send message
+  // Send message depending on model count
   const sendMessage = async () => {
-    if (!input.trim() || selectedModels.length === 0) return;
+    if (!input.trim() || selectedModels.length === 0) {
+      alert("⚠️ Please enter a message and select at least one model");
+      return;
+    }
 
-    const newMessage = { role: "user", content: input };
-    const updatedMessages = [...messages, newMessage];
-
+    const userMessage = { role: "user", content: input };
+    const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
-    setInput("");
 
     try {
       let response;
+
       if (selectedModels.length === 1) {
         // Single model → /chat
         response = await axios.post("http://localhost:8000/chat", {
@@ -47,67 +47,62 @@ export default function App() {
         });
       }
 
-      const botReply = {
+      // Backend returns assistant response
+      const assistantMessage = {
         role: "assistant",
-        content: JSON.stringify(response.data, null, 2), // Pretty print response
+        content: response.data.reply,
       };
-
-      setMessages((prev) => [...prev, botReply]);
+      setMessages((prev) => [...prev, assistantMessage]);
+      setInput("");
     } catch (error) {
-      console.error("Error:", error);
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "⚠️ Error: " + error.message },
-      ]);
+      console.error("❌ Error sending message:", error.response?.data || error.message);
+      alert("Something went wrong. Check console.");
     }
   };
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Multi-Model Chat</h1>
+      <h1 className="text-2xl font-bold mb-4">🧑‍💻 Multi-Chat</h1>
 
       {/* Model Selection */}
-      <div className="flex flex-wrap gap-3 mb-4">
-        {modelsList.map((model) => (
-          <label
-            key={model}
-            className={`px-4 py-2 rounded-lg cursor-pointer border ${
-              selectedModels.includes(model)
-                ? "bg-blue-500 text-white"
-                : "bg-gray-100"
-            }`}
-          >
-            <input
-              type="checkbox"
-              value={model}
-              checked={selectedModels.includes(model)}
-              onChange={() => toggleModel(model)}
-              className="hidden"
-            />
-            {model}
-          </label>
-        ))}
+      <div className="mb-4">
+        <h2 className="font-semibold">Select Models (max 2):</h2>
+        <div className="flex gap-4 mt-2">
+          {availableModels.map((model) => (
+            <label key={model} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={selectedModels.includes(model)}
+                onChange={() => handleModelToggle(model)}
+              />
+              <span>{model}</span>
+            </label>
+          ))}
+        </div>
+        <p className="text-sm text-gray-500 mt-1">
+          Selected: {selectedModels.join(", ") || "None"}
+        </p>
       </div>
 
-      {/* Chat Box */}
+      {/* Chat Window */}
       <div className="border rounded-lg p-4 h-80 overflow-y-auto mb-4 bg-gray-50">
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`mb-2 ${
-              msg.role === "user" ? "text-blue-600" : "text-green-600"
+            className={`mb-2 p-2 rounded-lg ${
+              msg.role === "user" ? "bg-blue-100 text-right" : "bg-green-100 text-left"
             }`}
           >
-            <strong>{msg.role}:</strong> {msg.content}
+            <strong>{msg.role}: </strong> {msg.content}
           </div>
         ))}
       </div>
 
-      {/* Input */}
+      {/* Input Box */}
       <div className="flex gap-2">
         <input
           type="text"
-          className="flex-1 border rounded-lg px-4 py-2"
+          className="flex-1 border rounded-lg p-2"
           placeholder="Type your message..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -115,7 +110,7 @@ export default function App() {
         />
         <button
           onClick={sendMessage}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
         >
           Send
         </button>
@@ -123,3 +118,5 @@ export default function App() {
     </div>
   );
 }
+
+export default App;
