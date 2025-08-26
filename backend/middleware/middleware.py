@@ -7,12 +7,12 @@ def setup_cors(app):
     """
     origins = [
         "http://localhost:5173",  
-        # "http://localhost:3000", 
+        "http://localhost:5174", 
     ]
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # or ["*"] for development
+        allow_origins=origins,  # or ["*"] for development
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

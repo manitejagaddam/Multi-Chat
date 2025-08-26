@@ -45,9 +45,12 @@ async def chat(req: ChatRequest):
 
     # Fetch previous messages from session
     session_history = get_session_messages(session_id)
+    # print(session_history)
+    logging.error(f"session_history : f{session_history}")
 
     # Convert new messages to dict
     new_messages = [m.dict() for m in req.messages]
+    logging.debug(f"new_messages: {new_messages} ")
 
     # Merge history + new messages
     full_messages = session_history + new_messages
@@ -56,6 +59,7 @@ async def chat(req: ChatRequest):
         reply = await connector.chat(full_messages, session_id=session_id)
         # Append assistant reply to session
         update_session_messages(session_id, new_messages + [{"role": "assistant", "content": reply}])
+        logging.debug(update_session_messages)
         return {"session_id": session_id, "model": model_name, "reply": reply}
     except Exception as e:
         logging.error(f"Error from {model_name}: {e}")
