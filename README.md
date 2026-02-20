@@ -63,7 +63,7 @@ MultiChat is powered by:
 ### Clone the Repo
 
 ```bash
-git clone https://github.com/manitejagaddam/Multi-Chat?.git
+git clone https://github.com/manitejagaddam/Multi-Chat.git
 cd MultiChat
 ```
 

@@ -6,7 +6,7 @@ class Message(BaseModel):
     content: str = Field(..., description="Message text content")
 
 class ChatRequest(BaseModel):
-    model: str
+    model: Optional[str] = None
     messages: List[Message]
     session_id: Optional[str] = None
 
